@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" 
+      th:replace="~{layout}" th:with-title="'Shopping Cart - E-Commerce'">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle}">Shopping Cart - E-Commerce</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <style>
+        .cart-empty {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        .cart-item {
+            transition: transform 0.3s;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        .cart-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .quantity-btn {
+            width: 30px;
+            height: 30px;
+        }
+        .cart-summary {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Cart Content -->
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-lg-8">
+                <h2>Shopping Cart</h2>
+                
+                <!-- Cart Items -->
+                <div th:if="${cart != null and !#lists.isEmpty(cart.items)}">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th>Subtotal</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="item : ${cart.items}">
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img th:src="${item.productImageUrl}" 
+                                                 th:alt="${item.productName}" 
+                                                 class="me-3 rounded" 
+                                                 style="width: 50px; height: 50px; object-fit: cover;">
+                                            <div>
+                                                <span th:text="${item.productName}">Product Name</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td th:text="${#numbers.formatDecimal(item.unitPrice)}">$0.00</td>
+                                    <td>
+                                        <div class="quantity-control">
+                                            <button class="quantity-btn btn btn-sm btn-outline-secondary" 
+                                                    th:onclick="'updateQuantity(' + ${item.productId} + ', ' + ${item.quantity - 1} + ')'">
+                                                <i class="fas fa-minus"></i>
+                                            </button>
+                                            <span th:text="${item.quantity}">1</span>
+                                            <button class="quantity-btn btn btn-sm btn-outline-primary" 
+                                                    th:onclick="'updateQuantity(' + ${item.productId} + ', ' + (${item.quantity} + 1) + ')'">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                    <td th:text="${#numbers.formatDecimal(item.subtotal)}">$0.00</td>
+                                    <td>
+                                        <form th:action="@{/cart/update}" method="post" class="d-inline">
+                                            <input type="hidden" name="productId" th:value="${item.productId}">
+                                            <input type="hidden" name="quantity" th:value="${item.quantity}">
+                                            <button type="submit" class="btn btn-sm btn-danger">
+                                                <i class="fas fa-trash"></i> Remove
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Cart Summary -->
+                    <div class="cart-summary">
+                        <h4>Order Summary</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Total Items:</strong> <span th:text="${#lists.size(cart.items)}">0</span></p>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <p><strong>Total Price:</strong> $<span th:text="${#numbers.formatDecimal(cart.totalPrice)}">0.00</span></p>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between">
+                            <a th:href="@{/products}" class="btn btn-light">
+                                <i class="fas fa-arrow-left me-2"></i> Continue Shopping
+                            </a>
+                            <a th:href="@{/cart/checkout}" class="btn btn-primary">
+                                Checkout <i class="fas fa-arrow-right me-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Empty Cart Message -->
+                <div th:if="${cart == null or #lists.isEmpty(cart.items)}" class="cart-empty">
+                    <div class="text-center">
+                        <i class="fas fa-shopping-cart fa-4x mb-4 text-muted"></i>
+                        <h3>Your cart is empty</h3>
+                        <p class="lead">Looks like you haven't added any products yet.</p>
+                        <a th:href="@{/products}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-shopping-cart me-2"></i> Start Shopping
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JavaScript for Cart Operations -->
+    <script>
+        function updateQuantity(productId, newQuantity) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/cart/update';
+            
+            const productIdInput = document.createElement('input');
+            productIdInput.type = 'hidden';
+            productIdInput.name = 'productId';
+            productIdInput.value = productId;
+            
+            const quantityInput = document.createElement('input');
+            quantityInput.type = 'hidden';
+            quantityInput.name = 'quantity';
+            quantityInput.value = newQuantity;
+            
+            form.appendChild(productIdInput);
+            form.appendChild(quantityInput);
+            document.body.appendChild(form);
+            form.submit();
+        }
+        
+        function removeFromCart(productId) {
+            if (confirm('Are you sure you want to remove this item from your cart?')) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/cart/remove/' + productId;
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+    </script>
+</body>
+</html>
