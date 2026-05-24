@@ -1,227 +1,549 @@
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${pageTitle}">Welcome to E-Commerce</title>
-    
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Custom CSS -->
-    <style>
-        .hero-section {
+    <title th:text="${pageTitle}">Welcome to LegendFoot</title>
+
+    <!-- Page-specific styles -->
+    <style layout:fragment="page-styles">
+        /* Hero Section Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Hero Section */
+        .hero-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+            padding: 120px 0 80px;
+        }
+
+        .hero-gradient::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .hero-buttons {
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+        }
+
+        .btn-hero {
+            padding: 14px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-hero-primary {
+            background: white;
+            color: #667eea;
+            border: 2px solid white;
+        }
+
+        .btn-hero-primary:hover {
+            background: transparent;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-hero-outline {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-hero-outline:hover {
+            background: white;
+            color: #667eea;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Features Section */
+        .features-section {
+            padding: 80px 0;
+            background: linear-gradient(to bottom, #f8f9fa 0%, white 100%);
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            border: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            height: 100%;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .feature-card:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .feature-card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .feature-card:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: rotate(5deg) scale(1.1);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .feature-icon i {
+            font-size: 2rem;
+            color: white;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2d3436;
+        }
+
+        .feature-description {
+            color: #636e72;
+            line-height: 1.7;
+        }
+
+        /* Products Section */
+        .products-section {
+            padding: 80px 0;
+            background: white;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2d3436;
+            margin-bottom: 1rem;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .section-subtitle {
+            font-size: 1.1rem;
+            color: #636e72;
+            margin-bottom: 3rem;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            border: none;
+            height: 100%;
+            animation: scaleIn 0.6s ease-out;
+        }
+
+        .product-card:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .product-card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .product-card:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .product-card:nth-child(4) {
+            animation-delay: 0.4s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.15);
+        }
+
+        .product-image-wrapper {
+            position: relative;
+            overflow: hidden;
+            height: 250px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+
+        .product-card:hover .product-image-wrapper img {
+            transform: scale(1.1);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .product-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #adb5bd;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 80px 0;
-            text-align: center;
-            margin-bottom: 40px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
         }
-        .hero-title {
-            font-size: 3rem;
-            font-weight: bold;
-            margin-bottom: 20px;
+
+        .product-body {
+            padding: 25px;
         }
-        .hero-subtitle {
-            font-size: 1.2rem;
-            opacity: 0.8;
+
+        .product-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2d3436;
+            min-height: 60px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
-        .feature-card {
-            transition: transform 0.3s;
+
+        .product-description {
+            color: #636e72;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .product-price {
+            font-size: 1.75rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+
+        .btn-product {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
             border: none;
-        }
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        }
-        .product-image {
-            height: 200px;
-            object-fit: cover;
-            border-radius: 8px;
-        }
-        .btn-primary-custom {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            border: none;
-            border-radius: 50px;
             padding: 12px 30px;
-            font-weight: bold;
-            transition: all 0.3s;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.9rem;
         }
-        .btn-primary-custom:hover {
+
+        .btn-product:hover {
             transform: translateY(-3px);
-            box-shadow: 0 15px 25px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            color: white;
+        }
+
+        .btn-view-all {
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
+            padding: 14px 40px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+            margin-top: 2rem;
+        }
+
+        .btn-view-all:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+
+            .btn-hero {
+                padding: 12px 30px;
+                font-size: 1rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .feature-card,
+            .product-card {
+                margin-bottom: 30px;
+            }
         }
     </style>
 </head>
-<body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" th:href="@{/}">
-                <i class="fas fa-store me-2"></i>E-Commerce
-            </a>
-            
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/}">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/products}">Products</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/about}">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/contact}">Contact</a>
-                    </li>
-                </ul>
-                
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/login}">
-                            <i class="fas fa-sign-in-alt me-1"></i> Login
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/register}">
-                            <i class="fas fa-user-plus me-1"></i> Register
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
 
+<!-- Main Content -->
+<div layout:fragment="content">
     <!-- Hero Section -->
-    <section class="hero-section">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12 text-center">
-                    <h1 class="hero-title">Welcome to E-Commerce</h1>
-                    <p class="hero-subtitle">Your trusted online shopping destination</p>
-                    <a th:href="@{/products}" class="btn btn-primary-custom btn-lg">
-                        <i class="fas fa-shopping-cart me-2"></i> Start Shopping
-                    </a>
+    <section class="hero-gradient">
+        <div class="container hero-content">
+            <div class="row justify-content-center">
+                <div class="col-lg-10 text-center">
+                    <h1 class="hero-title">Step Into Legend</h1>
+                    <p class="hero-subtitle">
+                        Discover premium footwear that combines style,
+                        comfort, and performance. Your journey to
+                        legendary begins here.
+                    </p>
+                    <div class="hero-buttons">
+                        <a th:href="@{/products}" class="btn btn-hero btn-hero-primary me-3">
+                            <i class="fas fa-shopping-bag me-2"></i>Shop
+                            Now
+                        </a>
+                        <a th:href="@{/about}" class="btn btn-hero btn-hero-outline">
+                            <i class="fas fa-info-circle me-2"></i>Learn
+                            More
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Features Section -->
-    <section class="py-5">
+    <section class="features-section">
         <div class="container">
-            <div class="row">
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100 feature-card">
-                        <div class="card-body text-center">
-                            <i class="fas fa-truck fa-3x mb-3 text-primary"></i>
-                            <h5 class="card-title">Fast Delivery</h5>
-                            <p class="card-text">Quick and reliable shipping nationwide</p>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="card feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-shipping-fast"></i>
                         </div>
+                        <h5 class="feature-title">Free Shipping</h5>
+                        <p class="feature-description">
+                            Enjoy free shipping on all orders over $50.
+                            Fast delivery to your doorstep.
+                        </p>
                     </div>
                 </div>
-                
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100 feature-card">
-                        <div class="card-body text-center">
-                            <i class="fas fa-shield-alt fa-3x mb-3 text-primary"></i>
-                            <h5 class="card-title">Secure Payment</h5>
-                            <p class="card-text">Multiple payment options with bank-level security</p>
+                <div class="col-lg-4 col-md-6">
+                    <div class="card feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
                         </div>
+                        <h5 class="feature-title">Secure Payment</h5>
+                        <p class="feature-description">
+                            Your transactions are protected with
+                            industry-leading security standards.
+                        </p>
                     </div>
                 </div>
-                
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100 feature-card">
-                        <div class="card-body text-center">
-                            <i class="fas fa-headset fa-3x mb-3 text-primary"></i>
-                            <h5 class="card-title">24/7 Support</h5>
-                            <p class="card-text">Dedicated customer service team</p>
+                <div class="col-lg-4 col-md-6">
+                    <div class="card feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-undo"></i>
                         </div>
+                        <h5 class="feature-title">Easy Returns</h5>
+                        <p class="feature-description">
+                            Not satisfied? Return within 30 days for a
+                            full refund, no questions asked.
+                        </p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Featured Products -->
-    <section class="py-5 bg-light">
+    <!-- Featured Products Section -->
+    <section class="products-section">
         <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <h2 class="text-center mb-4">Featured Products</h2>
-                    <div class="row">
-                        <div class="col-md-3 mb-4">
-                            <div class="card">
-                                <img src="https://via.placeholder.com/300x200" class="card-img-top product-image" alt="Laptop">
-                                <div class="card-body">
-                                    <h5 class="card-title">Premium Laptop</h5>
-                                    <p class="card-text">High-performance laptop with latest specifications</p>
-                                    <p class="card-text"><strong>$1,299.99</strong></p>
-                                    <a href="#" class="btn btn-primary">View Details</a>
-                                </div>
+            <div class="text-center">
+                <h2 class="section-title">Featured Products</h2>
+                <p class="section-subtitle">
+                    Check out our most popular footwear selections
+                </p>
+            </div>
+
+            <div class="row g-4" th:if="${featuredProducts != null and !featuredProducts.isEmpty()}">
+                <div class="col-lg-3 col-md-6" th:each="product : ${featuredProducts}">
+                    <div class="card product-card">
+                        <div class="product-image-wrapper">
+                            <img th:if="${product.imageUrl != null and !product.imageUrl.isEmpty()}"
+                                th:src="@{${product.imageUrl}}" th:alt="${product.name}" class="product-image" />
+                            <div th:unless="${product.imageUrl != null and !product.imageUrl.isEmpty()}"
+                                class="product-placeholder">
+                                <span th:text="${product.name}">Product</span>
                             </div>
+                            <span class="product-badge">New</span>
                         </div>
-                        
-                        <div class="col-md-3 mb-4">
-                            <div class="card">
-                                <img src="https://via.placeholder.com/300x200" class="card-img-top product-image" alt="Headphones">
-                                <div class="card-body">
-                                    <h5 class="card-title">Wireless Headphones</h5>
-                                    <p class="card-text">Premium noise-cancelling headphones</p>
-                                    <p class="card-text"><strong>$199.99</strong></p>
-                                    <a href="#" class="btn btn-primary">View Details</a>
-                                </div>
+                        <div class="product-body">
+                            <h5 class="product-title" th:text="${product.name}">
+                                Product Name
+                            </h5>
+                            <p class="product-description" th:text="${product.description}">
+                                Product description goes here
+                            </p>
+                            <div class="product-price" th:text="'$' + ${product.price}">
+                                $99.99
                             </div>
-                        </div>
-                        
-                        <div class="col-md-3 mb-4">
-                            <div class="card">
-                                <img src="https://via.placeholder.com/300x200" class="card-img-top product-image" alt="Smart Watch">
-                                <div class="card-body">
-                                    <h5 class="card-title">Smart Watch</h5>
-                                    <p class="card-text">Feature-rich smartwatch with health tracking</p>
-                                    <p class="card-text"><strong>$299.99</strong></p>
-                                    <a href="#" class="btn btn-primary">View Details</a>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-3 mb-4">
-                            <div class="card">
-                                <img src="https://via.placeholder.com/300x200" class="card-img-top product-image" alt="Camera">
-                                <div class="card-body">
-                                    <h5 class="card-title">Digital Camera</h5>
-                                    <p class="card-text">Professional DSLR camera for photography</p>
-                                    <p class="card-text"><strong>$899.99</strong></p>
-                                    <a href="#" class="btn btn-primary">View Details</a>
-                                </div>
-                            </div>
+                            <a th:href="@{/products/{id}(id=${product.id})}" class="btn btn-product w-100">
+                                View Details
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <!-- Footer -->
-    <footer class="bg-dark text-white py-4 mt-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12 text-center">
-                    <p>&copy; 2024 E-Commerce. All rights reserved.</p>
-                </div>
+            <!-- Empty State -->
+            <div th:if="${featuredProducts == null or featuredProducts.isEmpty()}" class="text-center py-5">
+                <i class="fas fa-box-open fa-4x text-muted mb-3"></i>
+                <h4 class="text-muted">
+                    No featured products available
+                </h4>
+                <p class="text-muted">
+                    Check back soon for exciting new arrivals!
+                </p>
+            </div>
+
+            <!-- View All Button -->
+            <div class="text-center" th:if="${featuredProducts != null and !featuredProducts.isEmpty()}">
+                <a th:href="@{/products}" class="btn-view-all">
+                    View All Products
+                    <i class="fas fa-arrow-right ms-2"></i>
+                </a>
             </div>
         </div>
-    </footer>
-
-    <!-- Bootstrap 5 JS Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+    </section>
+</div>

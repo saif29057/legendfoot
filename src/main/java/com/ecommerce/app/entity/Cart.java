@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -12,11 +14,11 @@ import java.util.Set;
 
 /**
  * Cart entity representing a shopping cart in the e-commerce system.
- * 
+ *
  * This entity follows the Single Responsibility Principle by being responsible
  * only for cart-related data and relationships. It's a JPA entity that maps
  * to the 'carts' table in the database.
- * 
+ *
  * The cart represents a user's shopping session and contains multiple cart items.
  * Each user can have multiple carts (e.g., active cart, saved carts).
  */
@@ -25,6 +27,8 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(exclude = {"cartItems", "user"})  // Exclude circular references
+@ToString(exclude = {"cartItems", "user"})  // Exclude circular references
 public class Cart {
 
     /**
@@ -70,6 +74,10 @@ public class Cart {
      * One-to-many relationship with CartItem entities.
      * A cart can contain multiple cart items.
      * Cart items are deleted when cart is deleted.
+     *
+     * NOTE: Excluded from equals() and hashCode() to prevent infinite loops
+     * in bidirectional relationships. The relationship is defined on the
+     * CartItem side (mappedBy = "cart").
      */
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<CartItem> cartItems = new HashSet<>();
@@ -95,7 +103,7 @@ public class Cart {
 
     /**
      * Business method to calculate the total price of all items in the cart.
-     * 
+     *
      * @return the total price as BigDecimal, or BigDecimal.ZERO if cart is empty
      */
     public BigDecimal getTotalPrice() {
@@ -106,7 +114,7 @@ public class Cart {
 
     /**
      * Business method to get the total number of items in the cart.
-     * 
+     *
      * @return the total quantity of all items, or 0 if cart is empty
      */
     public int getTotalItems() {
@@ -117,7 +125,7 @@ public class Cart {
 
     /**
      * Business method to check if the cart is empty.
-     * 
+     *
      * @return true if cart has no items, false otherwise
      */
     public boolean isEmpty() {
@@ -127,7 +135,7 @@ public class Cart {
     /**
      * Business method to add a product to the cart.
      * If the product already exists in the cart, increases the quantity.
-     * 
+     *
      * @param product the product to add
      * @param quantity the quantity to add
      * @throws IllegalArgumentException if quantity is not positive
@@ -139,7 +147,7 @@ public class Cart {
 
         // Check if product already exists in cart
         CartItem existingItem = findCartItemByProduct(product);
-        
+
         if (existingItem != null) {
             // Update existing item quantity
             existingItem.setQuantity(existingItem.getQuantity() + quantity);
@@ -155,7 +163,7 @@ public class Cart {
 
     /**
      * Business method to remove a product from the cart.
-     * 
+     *
      * @param product the product to remove
      * @return true if product was removed, false if not found
      */
@@ -170,7 +178,7 @@ public class Cart {
 
     /**
      * Business method to update the quantity of a product in the cart.
-     * 
+     *
      * @param product the product to update
      * @param quantity the new quantity
      * @throws IllegalArgumentException if quantity is not positive
@@ -190,7 +198,7 @@ public class Cart {
 
     /**
      * Helper method to find a cart item by product.
-     * 
+     *
      * @param product the product to find
      * @return the CartItem if found, null otherwise
      */

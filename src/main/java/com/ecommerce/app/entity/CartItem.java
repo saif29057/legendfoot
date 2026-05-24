@@ -6,17 +6,19 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
  * CartItem entity representing an item in a shopping cart.
- * 
+ *
  * This entity follows the Single Responsibility Principle by being responsible
  * only for cart item data and relationships. It's a JPA entity that maps
  * to the 'cart_items' table in the database.
- * 
+ *
  * The cart item represents a product with a specific quantity in a user's cart.
  */
 @Entity
@@ -24,6 +26,8 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(exclude = {"cart", "product"})  // Exclude circular references
+@ToString(exclude = {"cart", "product"})  // Exclude circular references
 public class CartItem {
 
     /**
@@ -39,6 +43,9 @@ public class CartItem {
      * Many-to-one relationship with Cart entity.
      * Each cart item belongs to exactly one cart.
      * Fetch type is LAZY to avoid loading cart data when not needed.
+     *
+     * NOTE: Excluded from equals() and hashCode() to prevent infinite loops
+     * in bidirectional relationships.
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id", nullable = false)
@@ -48,6 +55,9 @@ public class CartItem {
      * Many-to-one relationship with Product entity.
      * Each cart item references exactly one product.
      * Fetch type is LAZY to avoid loading product data when not needed.
+     *
+     * NOTE: Excluded from equals() and hashCode() to prevent infinite loops
+     * in bidirectional relationships.
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
@@ -98,7 +108,7 @@ public class CartItem {
     /**
      * Business method to calculate the subtotal price for this cart item.
      * Subtotal = product price × quantity.
-     * 
+     *
      * @return the subtotal price as BigDecimal
      * @throws IllegalStateException if product is null
      */
@@ -111,7 +121,7 @@ public class CartItem {
 
     /**
      * Business method to increase the quantity of this cart item.
-     * 
+     *
      * @param additionalQuantity the quantity to add
      * @throws IllegalArgumentException if additionalQuantity is not positive
      */
@@ -125,7 +135,7 @@ public class CartItem {
     /**
      * Business method to decrease the quantity of this cart item.
      * Ensures quantity doesn't go below 1.
-     * 
+     *
      * @param reductionQuantity the quantity to reduce
      * @throws IllegalArgumentException if reductionQuantity is not positive
      * @throws IllegalStateException if reduction would make quantity less than 1
@@ -143,20 +153,20 @@ public class CartItem {
     /**
      * Business method to check if this cart item is valid for checkout.
      * Validates that the product exists and has sufficient stock.
-     * 
+     *
      * @return true if valid for checkout, false otherwise
      */
     public boolean isValidForCheckout() {
-        return product != null && 
-               product.isActive() && 
-               product.isInStock() && 
+        return product != null &&
+               product.isActive() &&
+               product.isInStock() &&
                product.getStockQuantity() >= quantity;
     }
 
     /**
      * Business method to get the display name for this cart item.
      * Returns the product name or a default message if product is null.
-     * 
+     *
      * @return the display name
      */
     public String getDisplayName() {
@@ -166,7 +176,7 @@ public class CartItem {
     /**
      * Business method to get the display price for this cart item.
      * Returns the product price or BigDecimal.ZERO if product is null.
-     * 
+     *
      * @return the display price
      */
     public BigDecimal getDisplayPrice() {
@@ -176,7 +186,7 @@ public class CartItem {
     /**
      * Business method to get the image URL for this cart item.
      * Returns the product image URL or null if product is null.
-     * 
+     *
      * @return the image URL
      */
     public String getImageUrl() {

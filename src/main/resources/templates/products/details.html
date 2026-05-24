@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle}">Product Details</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            background: #f8f9fa;
+        }
+
+        .product-hero {
+            border: 1px solid #e9ecef;
+            border-radius: 1rem;
+            overflow: hidden;
+            background: #fff;
+        }
+
+        .product-media {
+            min-height: 320px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="container py-5">
+        <div class="mb-4">
+            <a class="btn btn-outline-secondary" th:href="@{/products}"><i class="fas fa-arrow-left me-2"></i>Back to
+                products</a>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="product-hero shadow-sm">
+                    <div class="product-media"
+                        th:if="${product.imageUrl != null and !#strings.isEmpty(product.imageUrl)}">
+                        <img th:src="${product.imageUrl}" th:alt="${product.name}" class="img-fluid w-100"
+                            style="object-fit:cover; min-height:320px;">
+                    </div>
+                    <div class="product-media"
+                        th:unless="${product.imageUrl != null and !#strings.isEmpty(product.imageUrl)}">
+                        No image available
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body p-4 p-lg-5">
+                        <span class="badge bg-success mb-3" th:if="${product.stockQuantity > 0}"
+                            th:text="${product.stockQuantity + ' in stock'}">In stock</span>
+                        <span class="badge bg-danger mb-3" th:unless="${product.stockQuantity > 0}">Out of stock</span>
+
+                        <h1 class="h3 mb-3" th:text="${product.name}">Product</h1>
+                        <p class="text-muted mb-4" th:text="${product.description}">Product description.</p>
+                        <p class="fs-3 fw-bold mb-4" th:text="${'$' + product.price}">$0.00</p>
+
+                        <div th:if="${authenticated and !isAdmin}" class="border rounded p-3 mb-4 bg-light">
+                            <h2 class="h6 mb-3">Buy now</h2>
+                            <form th:action="@{/cart/add}" method="post" class="row g-2 align-items-end">
+                                <input type="hidden" name="productId" th:value="${product.id}">
+                                <div class="col-6 col-md-4">
+                                    <label class="form-label" for="quantity">Quantity</label>
+                                    <input id="quantity" class="form-control" type="number" name="quantity" min="1"
+                                        value="1">
+                                </div>
+                                <div class="col-12 col-md-8">
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="fas fa-cart-plus me-2"></i>Add to cart
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div th:if="${authenticated and isAdmin}" class="d-flex flex-wrap gap-2 mb-4">
+                            <a class="btn btn-primary" th:href="@{/products/{id}/edit(id=${product.id})}"><i
+                                    class="fas fa-pen me-2"></i>Edit product</a>
+                            <form th:action="@{/products/{id}/delete(id=${product.id})}" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-outline-danger"
+                                    onclick="return confirm('Delete this product?');">
+                                    <i class="fas fa-trash me-2"></i>Delete product
+                                </button>
+                            </form>
+                        </div>
+
+                        <div th:if="${!authenticated}" class="alert alert-info mb-4">
+                            Login to add this product to your cart.
+                        </div>
+
+                        <dl class="row mb-0">
+                            <dt class="col-sm-4">Product ID</dt>
+                            <dd class="col-sm-8" th:text="${product.id}">0</dd>
+
+                            <dt class="col-sm-4">Stock</dt>
+                            <dd class="col-sm-8" th:text="${product.stockQuantity}">0</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

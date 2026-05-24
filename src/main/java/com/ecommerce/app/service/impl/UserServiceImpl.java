@@ -25,7 +25,8 @@ import java.util.stream.StreamSupport;
  * - Open/Closed: Open for extension through interfaces, closed for modification
  * - Liskov Substitution: Can be substituted with any UserService implementation
  * - Interface Segregation: Implements only methods needed for user operations
- * - Dependency Inversion: Depends on UserService interface, not concrete classes
+ * - Dependency Inversion: Depends on UserService interface, not concrete
+ * classes
  * 
  * The class uses constructor injection for dependency management
  * and follows best practices for error handling and logging.
@@ -49,37 +50,37 @@ public class UserServiceImpl implements UserService {
      * @param user user to create (with plain password)
      * @return created user (with encrypted password)
      * @throws IllegalArgumentException if user data is invalid
-     * @throws RuntimeException if username or email already exists
+     * @throws RuntimeException         if username or email already exists
      */
     @Override
     public User createUser(User user) {
         log.info("Creating new user: {}", user.getUsername());
-        
+
         // Validate user data
         if (!validateUserData(user)) {
             throw new IllegalArgumentException("Invalid user data provided");
         }
-        
+
         // Check if username already exists
         if (userRepository.existsByUsername(user.getUsername())) {
             throw new RuntimeException("Username already exists: " + user.getUsername());
         }
-        
+
         // Check if email already exists
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new RuntimeException("Email already exists: " + user.getEmail());
         }
-        
+
         // Encrypt password
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        
+
         // Set default values
         user.setRole(User.Role.USER);
         user.setEnabled(true);
-        
+
         User savedUser = userRepository.save(user);
         log.info("Successfully created user with ID: {}", savedUser.getId());
-        
+
         return savedUser;
     }
 
@@ -93,44 +94,44 @@ public class UserServiceImpl implements UserService {
      * @param user updated user data
      * @return updated user
      * @throws IllegalArgumentException if user data is invalid
-     * @throws RuntimeException if user not found
+     * @throws RuntimeException         if user not found
      */
     @Override
     public User updateUser(Long id, User user) {
         log.info("Updating user with ID: {}", id);
-        
+
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found with ID: " + id));
-        
+
         // Validate user data
         if (!validateUserData(user)) {
             throw new IllegalArgumentException("Invalid user data provided");
         }
-        
+
         // Check if username is being changed and if it's already taken
-        if (!existingUser.getUsername().equals(user.getUsername()) && 
-            userRepository.existsByUsername(user.getUsername())) {
+        if (!existingUser.getUsername().equals(user.getUsername()) &&
+                userRepository.existsByUsername(user.getUsername())) {
             throw new RuntimeException("Username already exists: " + user.getUsername());
         }
-        
+
         // Check if email is being changed and if it's already taken
-        if (!existingUser.getEmail().equals(user.getEmail()) && 
-            userRepository.existsByEmail(user.getEmail())) {
+        if (!existingUser.getEmail().equals(user.getEmail()) &&
+                userRepository.existsByEmail(user.getEmail())) {
             throw new RuntimeException("Email already exists: " + user.getEmail());
         }
-        
+
         // Update fields
         existingUser.setUsername(user.getUsername());
         existingUser.setEmail(user.getEmail());
-        
+
         // Only update password if provided
         if (user.getPassword() != null && !user.getPassword().trim().isEmpty()) {
             existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
         }
-        
+
         User updatedUser = userRepository.save(existingUser);
         log.info("Successfully updated user with ID: {}", updatedUser.getId());
-        
+
         return updatedUser;
     }
 
@@ -140,33 +141,33 @@ public class UserServiceImpl implements UserService {
      * This method handles user profile updates from DTO while maintaining
      * data integrity and business rules.
      * 
-     * @param id       the ID of the user to update
-     * @param userDto  the updated user data as DTO
+     * @param id      the ID of the user to update
+     * @param userDto the updated user data as DTO
      * @return the updated user
      * @throws IllegalArgumentException if user data is invalid
-     * @throws RuntimeException if user not found
+     * @throws RuntimeException         if user not found
      */
     @Override
     public User updateUser(Long id, UserDto userDto) {
         log.info("Updating user with ID: {} using DTO", id);
-        
+
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found with ID: " + id));
-        
+
         // Check if username is being changed and if it's already taken
-        if (userDto.getUsername() != null && 
-            !existingUser.getUsername().equals(userDto.getUsername()) && 
-            userRepository.existsByUsername(userDto.getUsername())) {
+        if (userDto.getUsername() != null &&
+                !existingUser.getUsername().equals(userDto.getUsername()) &&
+                userRepository.existsByUsername(userDto.getUsername())) {
             throw new RuntimeException("Username already exists: " + userDto.getUsername());
         }
-        
+
         // Check if email is being changed and if it's already taken
-        if (userDto.getEmail() != null && 
-            !existingUser.getEmail().equals(userDto.getEmail()) && 
-            userRepository.existsByEmail(userDto.getEmail())) {
+        if (userDto.getEmail() != null &&
+                !existingUser.getEmail().equals(userDto.getEmail()) &&
+                userRepository.existsByEmail(userDto.getEmail())) {
             throw new RuntimeException("Email already exists: " + userDto.getEmail());
         }
-        
+
         // Update fields if they are provided in DTO
         if (userDto.getUsername() != null) {
             existingUser.setUsername(userDto.getUsername());
@@ -174,25 +175,25 @@ public class UserServiceImpl implements UserService {
         if (userDto.getEmail() != null) {
             existingUser.setEmail(userDto.getEmail());
         }
-        
+
         // Only update password if provided
         if (userDto.getPassword() != null && !userDto.getPassword().trim().isEmpty()) {
             existingUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
         }
-        
+
         // Update role if provided
         if (userDto.getRole() != null) {
             existingUser.setRole(User.Role.valueOf(userDto.getRole()));
         }
-        
+
         // Update enabled status if provided
         if (userDto.getEnabled() != existingUser.isEnabled()) {
             existingUser.setEnabled(userDto.getEnabled());
         }
-        
+
         User updatedUser = userRepository.save(existingUser);
         log.info("Successfully updated user with ID: {} using DTO", updatedUser.getId());
-        
+
         return updatedUser;
     }
 
@@ -208,14 +209,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Long id) {
         log.info("Deleting user with ID: {}", id);
-        
+
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found with ID: " + id));
-        
+
         // Soft delete by disabling account
         user.setEnabled(false);
         userRepository.save(user);
-        
+
         log.info("Successfully deleted (disabled) user with ID: {}", id);
     }
 
@@ -317,41 +318,41 @@ public class UserServiceImpl implements UserService {
      * allowing the password change to proceed.
      * 
      * @param userId          ID of user
-     * @param currentPassword  current password for verification
+     * @param currentPassword current password for verification
      * @param newPassword     new password to set
      * @return true if password was changed successfully
      * @throws IllegalArgumentException if passwords are invalid
-     * @throws RuntimeException if current password doesn't match
+     * @throws RuntimeException         if current password doesn't match
      */
     @Override
     public boolean changePassword(Long userId, String currentPassword, String newPassword) {
         log.info("Changing password for user with ID: {}", userId);
-        
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
-        
+
         // Validate passwords
         if (currentPassword == null || currentPassword.trim().isEmpty()) {
             throw new IllegalArgumentException("Current password is required");
         }
-        
+
         if (newPassword == null || newPassword.trim().isEmpty()) {
             throw new IllegalArgumentException("New password is required");
         }
-        
+
         if (newPassword.length() < 6) {
             throw new IllegalArgumentException("New password must be at least 6 characters");
         }
-        
+
         // Verify current password
         if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
             throw new RuntimeException("Current password is incorrect");
         }
-        
+
         // Update password
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
-        
+
         log.info("Successfully changed password for user with ID: {}", userId);
         return true;
     }
@@ -367,13 +368,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public User setUserEnabled(Long userId, boolean enabled) {
         log.info("{} user with ID: {}", enabled ? "Enabling" : "Disabling", userId);
-        
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
-        
+
         user.setEnabled(enabled);
         User updatedUser = userRepository.save(user);
-        
+
         log.info("Successfully {} user with ID: {}", enabled ? "enabled" : "disabled", userId);
         return updatedUser;
     }
@@ -389,13 +390,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public User changeUserRole(Long userId, User.Role role) {
         log.info("Changing role for user with ID: {} to {}", userId, role);
-        
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
-        
+
         user.setRole(role);
         User updatedUser = userRepository.save(user);
-        
+
         log.info("Successfully changed role for user with ID: {} to {}", userId, role);
         return updatedUser;
     }
@@ -465,35 +466,32 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
             return false;
         }
-        
+
         // Validate username
         if (user.getUsername() == null || user.getUsername().trim().isEmpty()) {
             log.warn("Username validation failed: null or empty");
             return false;
         }
-        
+
         if (user.getUsername().length() < 3 || user.getUsername().length() > 50) {
             log.warn("Username validation failed: invalid length");
             return false;
         }
-        
-        // Validate email
+
+        // Validate email presence only here.
+        // The web layer already applies format validation via @Email,
+        // so duplicating a stricter regex here causes inconsistent failures.
         if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
             log.warn("Email validation failed: null or empty");
             return false;
         }
-        
-        if (!user.getEmail().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
-            log.warn("Email validation failed: invalid format");
-            return false;
-        }
-        
+
         // Validate password (for new users)
         if (user.getPassword() != null && user.getPassword().length() < 6) {
             log.warn("Password validation failed: too short");
             return false;
         }
-        
+
         return true;
     }
 
@@ -512,26 +510,26 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public Optional<User> authenticateUser(String usernameOrEmail, String password) {
         log.debug("Authenticating user: {}", usernameOrEmail);
-        
+
         Optional<User> userOpt = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail);
-        
+
         if (userOpt.isEmpty()) {
             log.warn("Authentication failed: user not found");
             return Optional.empty();
         }
-        
+
         User user = userOpt.get();
-        
+
         if (!user.isEnabled()) {
             log.warn("Authentication failed: user is disabled");
             return Optional.empty();
         }
-        
+
         if (!passwordEncoder.matches(password, user.getPassword())) {
             log.warn("Authentication failed: incorrect password");
             return Optional.empty();
         }
-        
+
         log.debug("Authentication successful for user: {}", user.getUsername());
         return Optional.of(user);
     }

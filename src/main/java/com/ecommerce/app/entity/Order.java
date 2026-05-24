@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -14,11 +16,11 @@ import java.util.Set;
 
 /**
  * Order entity representing a customer order in the e-commerce system.
- * 
+ *
  * This entity follows the Single Responsibility Principle by being responsible
  * only for order-related data and relationships. It's a JPA entity that maps
  * to the 'orders' table in the database.
- * 
+ *
  * The order represents a completed purchase transaction with multiple order items.
  */
 @Entity
@@ -26,6 +28,8 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(exclude = {"orderItems", "user"})
+@ToString(exclude = {"orderItems", "user"})
 public class Order {
 
     /**
@@ -144,7 +148,7 @@ public class Order {
     /**
      * Business method to calculate the total price from order items.
      * Should be called before saving to ensure totalPrice is accurate.
-     * 
+     *
      * @return the calculated total price
      */
     public BigDecimal calculateTotalPrice() {
@@ -155,7 +159,7 @@ public class Order {
 
     /**
      * Business method to get the total number of items in the order.
-     * 
+     *
      * @return the total quantity of all items
      */
     public int getTotalItems() {
@@ -167,7 +171,7 @@ public class Order {
     /**
      * Business method to check if the order can be cancelled.
      * Orders can only be cancelled if they are in PENDING status.
-     * 
+     *
      * @return true if order can be cancelled, false otherwise
      */
     public boolean canBeCancelled() {
@@ -177,7 +181,7 @@ public class Order {
     /**
      * Business method to check if the order can be shipped.
      * Orders can only be shipped if they are in PENDING status.
-     * 
+     *
      * @return true if order can be shipped, false otherwise
      */
     public boolean canBeShipped() {
@@ -187,7 +191,7 @@ public class Order {
     /**
      * Business method to check if the order can be delivered.
      * Orders can only be delivered if they are in SHIPPED status.
-     * 
+     *
      * @return true if order can be delivered, false otherwise
      */
     public boolean canBeDelivered() {
@@ -197,7 +201,7 @@ public class Order {
     /**
      * Business method to cancel the order.
      * Changes status to CANCELLED if order can be cancelled.
-     * 
+     *
      * @throws IllegalStateException if order cannot be cancelled
      */
     public void cancel() {
@@ -210,7 +214,7 @@ public class Order {
     /**
      * Business method to ship the order.
      * Changes status to SHIPPED and sets tracking number if provided.
-     * 
+     *
      * @param trackingNumber the tracking number (can be null)
      * @throws IllegalStateException if order cannot be shipped
      */
@@ -225,7 +229,7 @@ public class Order {
     /**
      * Business method to deliver the order.
      * Changes status to DELIVERED if order can be delivered.
-     * 
+     *
      * @throws IllegalStateException if order cannot be delivered
      */
     public void deliver() {
@@ -237,7 +241,7 @@ public class Order {
 
     /**
      * Business method to add an order item.
-     * 
+     *
      * @param orderItem the order item to add
      */
     public void addOrderItem(OrderItem orderItem) {
@@ -247,7 +251,7 @@ public class Order {
 
     /**
      * Business method to remove an order item.
-     * 
+     *
      * @param orderItem the order item to remove
      */
     public void removeOrderItem(OrderItem orderItem) {

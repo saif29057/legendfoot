@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle}">My Orders</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+    <main class="container py-5">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div>
+                <h1 class="h3 mb-1">My orders</h1>
+                <p class="text-muted mb-0">Review your completed and active purchases.</p>
+            </div>
+            <a class="btn btn-primary" th:href="@{/products}">Continue shopping</a>
+        </div>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table mb-0 align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Order</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th class="text-end">Total</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${orders == null or orders.empty}">
+                                <td colspan="5" class="text-center py-5 text-muted">You have no orders yet.</td>
+                            </tr>
+                            <tr th:each="order : ${orders.content}">
+                                <td th:text="${order.id}">1</td>
+                                <td th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd HH:mm')}">date</td>
+                                <td><span class="badge bg-secondary" th:text="${order.status}">PENDING</span></td>
+                                <td class="text-end" th:text="${'$' + order.totalPrice}">$0.00</td>
+                                <td class="text-end">
+                                    <a class="btn btn-sm btn-outline-primary"
+                                        th:href="@{/orders/{id}(id=${order.id})}">Details</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

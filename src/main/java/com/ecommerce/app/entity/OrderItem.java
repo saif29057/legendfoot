@@ -7,17 +7,19 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
  * OrderItem entity representing an item in a customer order.
- * 
+ *
  * This entity follows the Single Responsibility Principle by being responsible
  * only for order item data and relationships. It's a JPA entity that maps
  * to the 'order_items' table in the database.
- * 
+ *
  * The order item represents a product with a specific quantity and price
  * at the time of order placement. The price is stored to preserve historical
  * pricing even if the product price changes later.
@@ -27,6 +29,8 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(exclude = {"order", "product"})
+@ToString(exclude = {"order", "product"})
 public class OrderItem {
 
     /**
@@ -110,7 +114,7 @@ public class OrderItem {
     /**
      * Business method to calculate the subtotal price for this order item.
      * Subtotal = price × quantity.
-     * 
+     *
      * @return the subtotal price as BigDecimal
      */
     public BigDecimal getSubtotal() {
@@ -120,7 +124,7 @@ public class OrderItem {
     /**
      * Business method to get the display name for this order item.
      * Returns the product name or a default message if product is null.
-     * 
+     *
      * @return the display name
      */
     public String getDisplayName() {
@@ -130,7 +134,7 @@ public class OrderItem {
     /**
      * Business method to get the product description.
      * Returns the product description or null if product is null.
-     * 
+     *
      * @return the product description
      */
     public String getProductDescription() {
@@ -140,7 +144,7 @@ public class OrderItem {
     /**
      * Business method to get the image URL for this order item.
      * Returns the product image URL or null if product is null.
-     * 
+     *
      * @return the image URL
      */
     public String getImageUrl() {
@@ -150,21 +154,21 @@ public class OrderItem {
     /**
      * Business method to check if this order item is valid.
      * Validates that the product exists and quantity is positive.
-     * 
+     *
      * @return true if valid, false otherwise
      */
     public boolean isValid() {
-        return product != null && 
-               quantity != null && 
-               quantity > 0 && 
-               price != null && 
+        return product != null &&
+               quantity != null &&
+               quantity > 0 &&
+               price != null &&
                price.compareTo(BigDecimal.ZERO) > 0;
     }
 
     /**
      * Business method to create an order item from a cart item.
      * This is a factory method to convert cart items to order items during checkout.
-     * 
+     *
      * @param cartItem the cart item to convert
      * @return a new OrderItem with the same product and quantity
      */
@@ -180,7 +184,7 @@ public class OrderItem {
     /**
      * Business method to update the quantity of this order item.
      * This should only be used before the order is confirmed.
-     * 
+     *
      * @param newQuantity the new quantity
      * @throws IllegalArgumentException if newQuantity is not positive
      */
@@ -194,7 +198,7 @@ public class OrderItem {
     /**
      * Business method to update the price of this order item.
      * This should only be used before the order is confirmed.
-     * 
+     *
      * @param newPrice the new price
      * @throws IllegalArgumentException if newPrice is not positive
      */
@@ -208,14 +212,14 @@ public class OrderItem {
     /**
      * Business method to get a formatted string representation.
      * Useful for display purposes in order summaries.
-     * 
+     *
      * @return formatted string with product name, quantity, and price
      */
     @Override
     public String toString() {
-        return String.format("%s x%d - $%.2f", 
-            getDisplayName(), 
-            quantity, 
+        return String.format("%s x%d - $%.2f",
+            getDisplayName(),
+            quantity,
             getSubtotal());
     }
 }

@@ -1,0 +1,755 @@
+<!doctype html>
+<html
+    lang="en"
+    xmlns:th="http://www.thymeleaf.org"
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}"
+>
+    <head>
+        <title th:text="${pageTitle}">About Us - LegendFoot</title>
+
+        <!-- Page-specific styles -->
+        <style layout:fragment="page-styles">
+            /* Animations */
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                }
+            }
+
+            @keyframes slideInLeft {
+                from {
+                    opacity: 0;
+                    transform: translateX(-50px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            @keyframes slideInRight {
+                from {
+                    opacity: 0;
+                    transform: translateX(50px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            @keyframes scaleIn {
+                from {
+                    opacity: 0;
+                    transform: scale(0.9);
+                }
+                to {
+                    opacity: 1;
+                    transform: scale(1);
+                }
+            }
+
+            /* Hero Section */
+            .about-hero {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                padding: 100px 0;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .about-hero::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+                opacity: 0.3;
+            }
+
+            .about-hero-content {
+                position: relative;
+                z-index: 1;
+                animation: fadeInUp 0.8s ease-out;
+            }
+
+            .about-hero h1 {
+                color: white;
+                font-size: 3.5rem;
+                font-weight: 700;
+                margin-bottom: 1rem;
+            }
+
+            .about-hero p {
+                color: rgba(255, 255, 255, 0.9);
+                font-size: 1.25rem;
+                max-width: 700px;
+                margin: 0 auto;
+            }
+
+            /* Story Section */
+            .story-section {
+                padding: 80px 0;
+                background: white;
+            }
+
+            .story-content {
+                animation: slideInLeft 0.8s ease-out;
+            }
+
+            .story-image-wrapper {
+                animation: slideInRight 0.8s ease-out;
+                position: relative;
+            }
+
+            .story-image {
+                border-radius: 20px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+                transition: transform 0.4s ease;
+            }
+
+            .story-image:hover {
+                transform: scale(1.02);
+            }
+
+            .story-decoration {
+                position: absolute;
+                width: 200px;
+                height: 200px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border-radius: 20px;
+                opacity: 0.1;
+                z-index: -1;
+            }
+
+            .story-decoration-1 {
+                top: -30px;
+                right: -30px;
+            }
+
+            .story-decoration-2 {
+                bottom: -30px;
+                left: -30px;
+            }
+
+            .section-title {
+                font-size: 2.5rem;
+                font-weight: 700;
+                color: #2d3436;
+                margin-bottom: 1.5rem;
+            }
+
+            .section-subtitle {
+                font-size: 1.1rem;
+                color: #636e72;
+                line-height: 1.8;
+                margin-bottom: 2rem;
+            }
+
+            /* Values Section */
+            .values-section {
+                padding: 80px 0;
+                background: linear-gradient(to bottom, #f8f9fa 0%, white 100%);
+            }
+
+            .value-card {
+                background: white;
+                border-radius: 20px;
+                padding: 40px 30px;
+                text-align: center;
+                border: none;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+                transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+                height: 100%;
+                animation: fadeIn 0.6s ease-out;
+            }
+
+            .value-card:nth-child(1) {
+                animation-delay: 0.1s;
+            }
+            .value-card:nth-child(2) {
+                animation-delay: 0.2s;
+            }
+            .value-card:nth-child(3) {
+                animation-delay: 0.3s;
+            }
+            .value-card:nth-child(4) {
+                animation-delay: 0.4s;
+            }
+
+            .value-card:hover {
+                transform: translateY(-10px);
+                box-shadow: 0 20px 40px rgba(102, 126, 234, 0.15);
+            }
+
+            .value-icon {
+                width: 80px;
+                height: 80px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 20px;
+                transition: all 0.3s ease;
+            }
+
+            .value-card:hover .value-icon {
+                transform: rotate(10deg) scale(1.1);
+                box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            }
+
+            .value-icon i {
+                font-size: 2rem;
+                color: white;
+            }
+
+            .value-title {
+                font-size: 1.5rem;
+                font-weight: 600;
+                margin-bottom: 15px;
+                color: #2d3436;
+            }
+
+            .value-description {
+                color: #636e72;
+                line-height: 1.7;
+            }
+
+            /* Team Section */
+            .team-section {
+                padding: 80px 0;
+                background: white;
+            }
+
+            .team-card {
+                background: white;
+                border-radius: 20px;
+                overflow: hidden;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+                transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+                border: none;
+                animation: scaleIn 0.6s ease-out;
+            }
+
+            .team-card:nth-child(1) {
+                animation-delay: 0.1s;
+            }
+            .team-card:nth-child(2) {
+                animation-delay: 0.2s;
+            }
+            .team-card:nth-child(3) {
+                animation-delay: 0.3s;
+            }
+
+            .team-card:hover {
+                transform: translateY(-10px);
+                box-shadow: 0 20px 40px rgba(102, 126, 234, 0.15);
+            }
+
+            .team-image-wrapper {
+                position: relative;
+                overflow: hidden;
+                height: 300px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            }
+
+            .team-placeholder {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 100%;
+                color: white;
+            }
+
+            .team-placeholder i {
+                font-size: 4rem;
+                margin-bottom: 15px;
+            }
+
+            .team-body {
+                padding: 25px;
+                text-align: center;
+            }
+
+            .team-name {
+                font-size: 1.5rem;
+                font-weight: 600;
+                color: #2d3436;
+                margin-bottom: 5px;
+            }
+
+            .team-role {
+                color: #667eea;
+                font-weight: 500;
+                margin-bottom: 15px;
+                font-size: 1rem;
+            }
+
+            .team-bio {
+                color: #636e72;
+                line-height: 1.6;
+                font-size: 0.95rem;
+            }
+
+            .team-social {
+                margin-top: 20px;
+                display: flex;
+                justify-content: center;
+                gap: 15px;
+            }
+
+            .team-social a {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.3s ease;
+            }
+
+            .team-social a:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            }
+
+            /* Stats Section */
+            .stats-section {
+                padding: 80px 0;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+            }
+
+            .stat-card {
+                text-align: center;
+                padding: 30px;
+                animation: fadeInUp 0.8s ease-out;
+            }
+
+            .stat-card:nth-child(1) {
+                animation-delay: 0.1s;
+            }
+            .stat-card:nth-child(2) {
+                animation-delay: 0.2s;
+            }
+            .stat-card:nth-child(3) {
+                animation-delay: 0.3s;
+            }
+            .stat-card:nth-child(4) {
+                animation-delay: 0.4s;
+            }
+
+            .stat-number {
+                font-size: 3.5rem;
+                font-weight: 700;
+                margin-bottom: 10px;
+                display: block;
+            }
+
+            .stat-label {
+                font-size: 1.1rem;
+                opacity: 0.9;
+            }
+
+            /* CTA Section */
+            .cta-section {
+                padding: 80px 0;
+                background: white;
+                text-align: center;
+            }
+
+            .btn-cta {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border: none;
+                padding: 16px 50px;
+                border-radius: 50px;
+                font-weight: 600;
+                font-size: 1.1rem;
+                transition: all 0.3s ease;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .btn-cta:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+                color: white;
+            }
+
+            /* Responsive Design */
+            @media (max-width: 768px) {
+                .about-hero h1 {
+                    font-size: 2.5rem;
+                }
+
+                .section-title {
+                    font-size: 2rem;
+                }
+
+                .stat-number {
+                    font-size: 2.5rem;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <!-- Main Content -->
+        <div layout:fragment="content">
+            <!-- Hero Section -->
+            <section class="about-hero">
+                <div class="container about-hero-content">
+                    <div class="text-center">
+                        <h1>About LegendFoot</h1>
+                        <p>
+                            Crafting legendary footwear experiences since day
+                            one. Every step tells a story.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Story Section -->
+            <section class="story-section">
+                <div class="container">
+                    <div class="row align-items-center g-5">
+                        <div class="col-lg-6 story-content">
+                            <h2 class="section-title">Our Story</h2>
+                            <p class="section-subtitle">
+                                Founded with a passion for quality and
+                                innovation, LegendFoot has been at the forefront
+                                of footwear excellence. We believe that every
+                                step should be comfortable, stylish, and
+                                empowering.
+                            </p>
+                            <p class="section-subtitle">
+                                From our humble beginnings to becoming a trusted
+                                name in premium footwear, our journey has been
+                                driven by one simple mission: to help you step
+                                into your legend. We combine cutting-edge
+                                technology with timeless design to create shoes
+                                that don't just look good — they perform
+                                exceptionally.
+                            </p>
+                            <p class="section-subtitle mb-0">
+                                Today, we serve thousands of satisfied customers
+                                worldwide, each one a testament to our
+                                commitment to quality, comfort, and style. Join
+                                the LegendFoot family and experience the
+                                difference.
+                            </p>
+                        </div>
+                        <div class="col-lg-6 story-image-wrapper">
+                            <div
+                                class="story-decoration story-decoration-1"
+                            ></div>
+                            <div
+                                class="story-decoration story-decoration-2"
+                            ></div>
+                            <div class="position-relative text-center">
+                                <div
+                                    style="
+                                        background: linear-gradient(
+                                            135deg,
+                                            #667eea 0%,
+                                            #764ba2 100%
+                                        );
+                                        height: 400px;
+                                        border-radius: 20px;
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        color: white;
+                                        font-size: 1.5rem;
+                                        font-weight: 600;
+                                        letter-spacing: 1px;
+                                        box-shadow: 0 20px 60px
+                                            rgba(0, 0, 0, 0.1);
+                                    "
+                                >
+                                    <div>
+                                        <i
+                                            class="fas fa-shoe-prints fa-4x mb-3"
+                                        ></i>
+                                        <div>LEGENDFOOT</div>
+                                        <div
+                                            style="
+                                                font-size: 1rem;
+                                                opacity: 0.8;
+                                                margin-top: 10px;
+                                            "
+                                        >
+                                            Est. 2024
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Values Section -->
+            <section class="values-section">
+                <div class="container">
+                    <div class="text-center mb-5">
+                        <h2 class="section-title">Our Core Values</h2>
+                        <p class="section-subtitle">
+                            The principles that guide everything we do
+                        </p>
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-lg-3 col-md-6">
+                            <div class="card value-card">
+                                <div class="value-icon">
+                                    <i class="fas fa-award"></i>
+                                </div>
+                                <h5 class="value-title">Quality</h5>
+                                <p class="value-description">
+                                    Premium materials and meticulous
+                                    craftsmanship in every pair we create.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="card value-card">
+                                <div class="value-icon">
+                                    <i class="fas fa-lightbulb"></i>
+                                </div>
+                                <h5 class="value-title">Innovation</h5>
+                                <p class="value-description">
+                                    Constantly pushing boundaries to deliver the
+                                    latest in footwear technology.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="card value-card">
+                                <div class="value-icon">
+                                    <i class="fas fa-heart"></i>
+                                </div>
+                                <h5 class="value-title">Passion</h5>
+                                <p class="value-description">
+                                    Dedicated to excellence and customer
+                                    satisfaction in everything we do.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="card value-card">
+                                <div class="value-icon">
+                                    <i class="fas fa-leaf"></i>
+                                </div>
+                                <h5 class="value-title">Sustainability</h5>
+                                <p class="value-description">
+                                    Committed to eco-friendly practices and
+                                    responsible manufacturing.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Stats Section -->
+            <section class="stats-section">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-3 col-md-6">
+                            <div class="stat-card">
+                                <span class="stat-number">10K+</span>
+                                <span class="stat-label">Happy Customers</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="stat-card">
+                                <span class="stat-number">500+</span>
+                                <span class="stat-label">Products</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="stat-card">
+                                <span class="stat-number">50+</span>
+                                <span class="stat-label">Countries</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="stat-card">
+                                <span class="stat-number">98%</span>
+                                <span class="stat-label"
+                                    >Satisfaction Rate</span
+                                >
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Team Section -->
+            <section class="team-section">
+                <div class="container">
+                    <div class="text-center mb-5">
+                        <h2 class="section-title">Meet Our Team</h2>
+                        <p class="section-subtitle">
+                            The passionate people behind LegendFoot
+                        </p>
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-lg-4 col-md-6">
+                            <div class="card team-card">
+                                <div class="team-image-wrapper">
+                                    <div class="team-placeholder">
+                                        <i class="fas fa-user-tie"></i>
+                                        <span
+                                            style="
+                                                font-size: 1.2rem;
+                                                font-weight: 600;
+                                            "
+                                            >John Anderson</span
+                                        >
+                                    </div>
+                                </div>
+                                <div class="team-body">
+                                    <h5 class="team-name">John Anderson</h5>
+                                    <p class="team-role">
+                                        Chief Executive Officer
+                                    </p>
+                                    <p class="team-bio">
+                                        Visionary leader with 15+ years in the
+                                        footwear industry. Passionate about
+                                        innovation and customer experience.
+                                    </p>
+                                    <div class="team-social">
+                                        <a href="#"
+                                            ><i class="fab fa-linkedin-in"></i
+                                        ></a>
+                                        <a href="#"
+                                            ><i class="fab fa-twitter"></i
+                                        ></a>
+                                        <a href="#"
+                                            ><i class="fas fa-envelope"></i
+                                        ></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4 col-md-6">
+                            <div class="card team-card">
+                                <div class="team-image-wrapper">
+                                    <div class="team-placeholder">
+                                        <i class="fas fa-user-tie"></i>
+                                        <span
+                                            style="
+                                                font-size: 1.2rem;
+                                                font-weight: 600;
+                                            "
+                                            >Sarah Mitchell</span
+                                        >
+                                    </div>
+                                </div>
+                                <div class="team-body">
+                                    <h5 class="team-name">Sarah Mitchell</h5>
+                                    <p class="team-role">Head of Design</p>
+                                    <p class="team-bio">
+                                        Award-winning designer specializing in
+                                        sustainable and contemporary footwear
+                                        design.
+                                    </p>
+                                    <div class="team-social">
+                                        <a href="#"
+                                            ><i class="fab fa-linkedin-in"></i
+                                        ></a>
+                                        <a href="#"
+                                            ><i class="fab fa-twitter"></i
+                                        ></a>
+                                        <a href="#"
+                                            ><i class="fas fa-envelope"></i
+                                        ></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4 col-md-6">
+                            <div class="card team-card">
+                                <div class="team-image-wrapper">
+                                    <div class="team-placeholder">
+                                        <i class="fas fa-user-tie"></i>
+                                        <span
+                                            style="
+                                                font-size: 1.2rem;
+                                                font-weight: 600;
+                                            "
+                                            >Michael Chen</span
+                                        >
+                                    </div>
+                                </div>
+                                <div class="team-body">
+                                    <h5 class="team-name">Michael Chen</h5>
+                                    <p class="team-role">
+                                        Customer Success Manager
+                                    </p>
+                                    <p class="team-bio">
+                                        Dedicated to ensuring every customer has
+                                        an exceptional experience with
+                                        LegendFoot.
+                                    </p>
+                                    <div class="team-social">
+                                        <a href="#"
+                                            ><i class="fab fa-linkedin-in"></i
+                                        ></a>
+                                        <a href="#"
+                                            ><i class="fab fa-twitter"></i
+                                        ></a>
+                                        <a href="#"
+                                            ><i class="fas fa-envelope"></i
+                                        ></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CTA Section -->
+            <section class="cta-section">
+                <div class="container">
+                    <h2 class="section-title">
+                        Ready to Step Into Your Legend?
+                    </h2>
+                    <p class="section-subtitle mb-4">
+                        Explore our collection and find your perfect pair
+                    </p>
+                    <a th:href="@{/products}" class="btn btn-cta">
+                        <i class="fas fa-shopping-bag me-2"></i>Shop Now
+                    </a>
+                </div>
+            </section>
+        </div>
+    </body>
+</html>

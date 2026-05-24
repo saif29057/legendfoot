@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle}">System Settings</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            background: #f8f9fa;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .page-header h1 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .settings-nav {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .settings-nav-item {
+            display: block;
+            padding: 1rem 1.5rem;
+            color: #495057;
+            text-decoration: none;
+            border-bottom: 1px solid #e9ecef;
+            transition: all 0.2s;
+        }
+
+        .settings-nav-item:last-child {
+            border-bottom: none;
+        }
+
+        .settings-nav-item:hover {
+            background: #f8f9fa;
+            color: #667eea;
+            padding-left: 2rem;
+        }
+
+        .settings-nav-item i {
+            width: 20px;
+            margin-right: 0.75rem;
+        }
+
+        .settings-section {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .settings-section-header {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .settings-section-header h4 {
+            margin: 0;
+            color: #212529;
+            font-weight: 600;
+        }
+
+        .settings-section-header p {
+            margin: 0.5rem 0 0 0;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        .settings-section-body {
+            padding: 1.5rem;
+        }
+
+        .setting-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .setting-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .setting-label {
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 0.5rem;
+        }
+
+        .setting-description {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-bottom: 0.75rem;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e9ecef;
+            margin-top: 1.5rem;
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #0d6efd;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-box i {
+            color: #0d6efd;
+            margin-right: 0.75rem;
+        }
+
+        .success-message {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            color: #155724;
+        }
+
+        .success-message i {
+            color: #28a745;
+            margin-right: 0.75rem;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="container py-5">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>System Settings</h1>
+            <p class="mb-0 mt-2">Configure your e-commerce platform settings</p>
+        </div>
+
+        <!-- Info Box -->
+        <div class="info-box">
+            <i class="fas fa-info-circle"></i>
+            <strong>System Configuration:</strong> Adjust your platform settings to optimize performance and user experience.
+        </div>
+
+        <div class="row">
+            <!-- Settings Navigation -->
+            <div class="col-lg-3">
+                <div class="settings-nav">
+                    <a href="#general" class="settings-nav-item">
+                        <i class="fas fa-cog"></i>General Settings
+                    </a>
+                    <a href="#security" class="settings-nav-item">
+                        <i class="fas fa-shield-alt"></i>Security
+                    </a>
+                    <a href="#email" class="settings-nav-item">
+                        <i class="fas fa-envelope"></i>Email
+                    </a>
+                    <a href="#payment" class="settings-nav-item">
+                        <i class="fas fa-credit-card"></i>Payment
+                    </a>
+                    <a href="#notifications" class="settings-nav-item">
+                        <i class="fas fa-bell"></i>Notifications
+                    </a>
+                    <a href="#backup" class="settings-nav-item">
+                        <i class="fas fa-database"></i>Backup
+                    </a>
+                </div>
+            </div>
+
+            <!-- Settings Content -->
+            <div class="col-lg-9">
+                <!-- General Settings -->
+                <div class="settings-section" id="general">
+                    <div class="settings-section-header">
+                        <h4><i class="fas fa-cog me-2"></i>General Settings</h4>
+                        <p>Configure basic platform information</p>
+                    </div>
+                    <div class="settings-section-body">
+                        <div class="setting-group">
+                            <label class="setting-label">Store Name</label>
+                            <p class="setting-description">The name of your e-commerce store</p>
+                            <input type="text" class="form-control" placeholder="Your Store Name" value="LegendFoot" disabled>
+                        </div>
+                        <div class="setting-group">
+                            <label class="setting-label">Store Email</label>
+                            <p class="setting-description">Primary contact email for your store</p>
+                            <input type="email" class="form-control" placeholder="store@example.com" disabled>
+                        </div>
+                        <div class="setting-group">
+                            <label class="setting-label">Store URL</label>
+                            <p class="setting-description">Your store's website URL</p>
+                            <input type="url" class="form-control" placeholder="https://example.com" disabled>
+                        </div>
+                        <div class="setting-group">
+                            <label class="setting-label">Currency</label>
+                            <p class="setting-description">Default currency for transactions</p>
+                            <select class="form-select" disabled>
+                                <option selected>USD - United States Dollar</option>
+                                <option>EUR - Euro</option>
+                                <option>GBP - British Pound</option>
+                            </select>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" disabled>
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Settings -->
+                <div class="settings-section" id="security">
+                    <div class="settings-section-header">
+                        <h4><i class="fas fa-shield-alt me-2"></i>Security</h4>
+                        <p>Manage security and access controls</p>
+                    </div>
+                    <div class="settings-section-body">
+                        <div class="setting-group">
+                            <label class="setting-label">Session Timeout (minutes)</label>
+                            <p class="setting-description">How long before an inactive session expires</p>
+                            <input type="number" class="form-control" value="30" disabled>
+                        </div>
+                        <div class="setting-group">
+                            <label class="setting-label">Password Requirements</label>
+                            <p class="setting-description">Enforce strong password policies</p>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="securePass" checked disabled>
+                                <label class="form-check-label" for="securePass">
+                                    Require at least 8 characters
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="mixedPass" checked disabled>
+                                <label class="form-check-label" for="mixedPass">
+                                    Require mixed case letters
+                                </label>
+                            </div>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" disabled>
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Email Settings -->
+                <div class="settings-section" id="email">
+                    <div class="settings-section-header">
+                        <h4><i class="fas fa-envelope me-2"></i>Email Configuration</h4>
+                        <p>Set up email notifications</p>
+                    </div>
+                    <div class="settings-section-body">
+                        <div class="setting-group">
+                            <label class="setting-label">SMTP Server</label>
+                            <p class="setting-description">Email server address</p>
+                            <input type="text" class="form-control" placeholder="smtp.gmail.com" disabled>
+                        </div>
+                        <div class="setting-group">
+                            <label class="setting-label">SMTP Port</label>
+                            <p class="setting-description">Email server port</p>
+                            <input type="number" class="form-control" value="587" disabled>
+                        </div>
+                        <div class="setting-group">
+                            <label class="setting-label">From Email Address</label>
+                            <p class="setting-description">Address emails will be sent from</p>
+                            <input type="email" class="form-control" placeholder="noreply@example.com" disabled>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" disabled>
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                            <button class="btn btn-outline-secondary" disabled>
+                                <i class="fas fa-envelope me-2"></i>Send Test Email
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Settings -->
+                <div class="settings-section" id="payment">
+                    <div class="settings-section-header">
+                        <h4><i class="fas fa-credit-card me-2"></i>Payment Gateway</h4>
+                        <p>Configure payment processing</p>
+                    </div>
+                    <div class="settings-section-body">
+                        <div class="setting-group">
+                            <label class="setting-label">Payment Provider</label>
+                            <p class="setting-description">Select your payment gateway</p>
+                            <select class="form-select" disabled>
+                                <option>Stripe</option>
+                                <option>PayPal</option>
+                                <option>Square</option>
+                            </select>
+                        </div>
+                        <div class="setting-group">
+                            <label class="setting-label">API Key</label>
+                            <p class="setting-description">Your payment provider's API key</p>
+                            <input type="password" class="form-control" placeholder="••••••••" disabled>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" disabled>
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Backup & Maintenance -->
+                <div class="settings-section" id="backup">
+                    <div class="settings-section-header">
+                        <h4><i class="fas fa-database me-2"></i>Backup & Maintenance</h4>
+                        <p>Manage backups and system maintenance</p>
+                    </div>
+                    <div class="settings-section-body">
+                        <div class="setting-group">
+                            <label class="setting-label">Last Backup</label>
+                            <p class="setting-description">Latest backup timestamp</p>
+                            <div class="alert alert-info mb-0">
+                                <i class="fas fa-calendar me-2"></i>May 21, 2026 at 22:45
+                            </div>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" disabled>
+                                <i class="fas fa-download me-2"></i>Create Backup Now
+                            </button>
+                            <button class="btn btn-outline-secondary" disabled>
+                                <i class="fas fa-history me-2"></i>View Backup History
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back to Dashboard -->
+        <div class="mt-5">
+            <a href="/admin/dashboard" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+            </a>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

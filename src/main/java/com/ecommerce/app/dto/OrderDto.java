@@ -1,20 +1,19 @@
 package com.ecommerce.app.dto;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Data Transfer Object for Order operations.
- * 
+ *
  * This DTO follows the Single Responsibility Principle by containing
  * only order-related data for transfer between layers.
  * It prevents entity exposure and provides clean separation
  * between controller and service layers.
- * 
+ *
  * The DTO provides a clean way to transfer order data
  * and follows best practices for data transfer objects.
  */
@@ -34,6 +33,18 @@ public class OrderDto {
      * Used for order ownership verification.
      */
     private Long userId;
+
+    /**
+     * Username of the customer who placed the order.
+     * Used for order display in admin panels.
+     */
+    private String userName;
+
+    /**
+     * Email of the customer who placed the order.
+     * Used for order display and customer contact.
+     */
+    private String userEmail;
 
     /**
      * Order date for display and filtering.
@@ -85,11 +96,11 @@ public class OrderDto {
 
     /**
      * Static factory method for creating OrderDto from Order entity.
-     * 
+     *
      * This method provides clean conversion between entity and DTO,
      * following the Single Responsibility Principle by centralizing
      * conversion logic.
-     * 
+     *
      * @param order Order entity to convert
      * @return OrderDto with order data
      */
@@ -97,62 +108,79 @@ public class OrderDto {
         if (order == null) {
             return null;
         }
-        
+
         OrderDto dto = new OrderDto();
         dto.setId(order.getId());
         dto.setUserId(order.getUser() != null ? order.getUser().getId() : null);
+        dto.setUserName(
+            order.getUser() != null ? order.getUser().getUsername() : null
+        );
+        dto.setUserEmail(
+            order.getUser() != null ? order.getUser().getEmail() : null
+        );
         dto.setOrderDate(order.getOrderDate());
         dto.setTotalPrice(order.getTotalPrice());
-        dto.setStatus(order.getStatus() != null ? order.getStatus().name() : null);
+        dto.setStatus(
+            order.getStatus() != null ? order.getStatus().name() : null
+        );
         dto.setShippingAddress(order.getShippingAddress());
         dto.setBillingAddress(order.getBillingAddress());
         dto.setTrackingNumber(order.getTrackingNumber());
         dto.setNotes(order.getNotes());
-        
-        // Convert order items
-        if (order.getOrderItems() != null) {
-            List<OrderItemDto> itemDtos = order.getOrderItems().stream()
-                    .map(OrderItemDto::fromEntity)
-                    .collect(java.util.stream.Collectors.toList());
+
+        // Convert order items only if they are loaded
+        // Order items are LAZY loaded, so check if they're initialized
+        if (order.getOrderItems() != null && !order.getOrderItems().isEmpty()) {
+            List<OrderItemDto> itemDtos = order
+                .getOrderItems()
+                .stream()
+                .map(OrderItemDto::fromEntity)
+                .collect(java.util.stream.Collectors.toList());
             dto.setItems(itemDtos);
+        } else {
+            dto.setItems(new java.util.ArrayList<>());
         }
-        
+
         return dto;
     }
 
     /**
      * Static factory method for creating OrderDto for checkout confirmation.
-     * 
+     *
      * This method provides a clean way to create DTOs
      * for checkout confirmation pages.
-     * 
+     *
      * @param order Order entity to convert
      * @return OrderDto with checkout confirmation data
      */
-    public static OrderDto forCheckoutConfirmation(com.ecommerce.app.entity.Order order) {
+    public static OrderDto forCheckoutConfirmation(
+        com.ecommerce.app.entity.Order order
+    ) {
         OrderDto dto = fromEntity(order);
-        
+
         // You could add additional fields specific to checkout confirmation
         // For example: payment method, delivery estimates, etc.
-        
+
         return dto;
     }
 
     /**
      * Static factory method for creating OrderDto for order history.
-     * 
+     *
      * This method provides a clean way to create DTOs
      * for order history display.
-     * 
+     *
      * @param order Order entity to convert
      * @return OrderDto with order history data
      */
-    public static OrderDto forOrderHistory(com.ecommerce.app.entity.Order order) {
+    public static OrderDto forOrderHistory(
+        com.ecommerce.app.entity.Order order
+    ) {
         OrderDto dto = fromEntity(order);
-        
+
         // You could add fields specific to order history display
         // For example: simplified item list, status badges, etc.
-        
+
         return dto;
     }
 }

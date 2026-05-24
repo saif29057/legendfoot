@@ -1,100 +1,719 @@
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" 
-      th:replace="~{layout}" th:with-title="'Products - E-Commerce'">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${pageTitle}">Products - E-Commerce</title>
-    
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Custom CSS -->
-    <style>
-        .search-container {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-        }
-        .product-card {
-            transition: transform 0.3s;
-            border: none;
-        }
-        .product-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-        .pagination-container {
-            display: flex;
-            justify-content: center;
-            margin-top: 30px;
-        }
-    </style>
-</head>
-<body>
-    <!-- Search Section -->
-    <div class="container mt-4">
-        <div class="search-container">
-            <form th:action="@{/products}" method="get" class="d-flex">
-                <input type="text" name="search" class="form-control me-2" 
-                       th:value="${search}" placeholder="Search products...">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-search me-2"></i> Search
-                </button>
-            </form>
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title th:text="${pageTitle}">Products</title>
+
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        />
+
+        <style>
+            :root {
+                --primary-gradient-start: #667eea;
+                --primary-gradient-end: #764ba2;
+                --shadow-sm: 0 2px 8px rgba(102, 126, 234, 0.1);
+                --shadow-md: 0 8px 25px rgba(102, 126, 234, 0.15);
+                --shadow-lg: 0 15px 40px rgba(102, 126, 234, 0.2);
+            }
+
+            * {
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            body {
+                background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+                min-height: 100vh;
+            }
+
+            /* Entrance Animation */
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                }
+            }
+
+            .animate-fade-in-up {
+                animation: fadeInUp 0.6s ease-out forwards;
+            }
+
+            .animate-fade-in {
+                animation: fadeIn 0.5s ease-out;
+            }
+
+            /* Search Container */
+            .search-container {
+                background: white;
+                padding: 2rem;
+                border-radius: 20px;
+                margin-bottom: 2rem;
+                box-shadow: var(--shadow-sm);
+                animation: fadeInUp 0.6s ease-out;
+            }
+
+            .search-container .form-control {
+                border-radius: 12px;
+                border: 2px solid #e9ecef;
+                padding: 0.75rem 1.25rem;
+                font-size: 1rem;
+            }
+
+            .search-container .form-control:focus {
+                border-color: var(--primary-gradient-start);
+                box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.15);
+                transform: translateY(-2px);
+            }
+
+            /* Gradient Buttons */
+            .btn-gradient {
+                background: linear-gradient(
+                    135deg,
+                    var(--primary-gradient-start) 0%,
+                    var(--primary-gradient-end) 100%
+                );
+                border: none;
+                color: white;
+                border-radius: 12px;
+                padding: 0.75rem 1.5rem;
+                font-weight: 600;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .btn-gradient::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(
+                    135deg,
+                    var(--primary-gradient-end) 0%,
+                    var(--primary-gradient-start) 100%
+                );
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+
+            .btn-gradient:hover::before {
+                opacity: 1;
+            }
+
+            .btn-gradient:hover {
+                transform: translateY(-2px);
+                box-shadow: var(--shadow-md);
+            }
+
+            .btn-gradient span {
+                position: relative;
+                z-index: 1;
+            }
+
+            /* Product Cards */
+            .product-card {
+                border: none;
+                border-radius: 20px;
+                overflow: hidden;
+                background: white;
+                box-shadow: var(--shadow-sm);
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                animation-fill-mode: both;
+            }
+
+            .product-card:hover {
+                transform: translateY(-12px) scale(1.02);
+                box-shadow: var(--shadow-lg);
+            }
+
+            .product-media {
+                height: 240px;
+                overflow: hidden;
+                background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                position: relative;
+            }
+
+            .product-media img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            .product-card:hover .product-media img {
+                transform: scale(1.15);
+            }
+
+            .product-media-placeholder {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #6c757d;
+                font-weight: 600;
+                font-size: 0.85rem;
+                letter-spacing: 0.04em;
+                text-transform: uppercase;
+            }
+
+            .product-card .card-body {
+                padding: 1.5rem;
+                display: flex;
+                flex-direction: column;
+                flex-grow: 1;
+            }
+
+            .product-card .card-title {
+                font-weight: 700;
+                color: #2d3748;
+                margin-bottom: 0.75rem;
+                font-size: 1.1rem;
+            }
+
+            .product-card .price {
+                background: linear-gradient(
+                    135deg,
+                    var(--primary-gradient-start) 0%,
+                    var(--primary-gradient-end) 100%
+                );
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                font-weight: 800;
+                font-size: 1.5rem;
+            }
+
+            /* Badge Styles */
+            .badge {
+                padding: 0.5rem 1rem;
+                border-radius: 20px;
+                font-weight: 600;
+                font-size: 0.75rem;
+            }
+
+            .badge.bg-success {
+                background: linear-gradient(
+                    135deg,
+                    #48bb78 0%,
+                    #38a169 100%
+                ) !important;
+            }
+
+            .badge.bg-danger {
+                background: linear-gradient(
+                    135deg,
+                    #f56565 0%,
+                    #e53e3e 100%
+                ) !important;
+            }
+
+            /* Action Buttons */
+            .btn-view-details {
+                background: linear-gradient(
+                    135deg,
+                    var(--primary-gradient-start) 0%,
+                    var(--primary-gradient-end) 100%
+                );
+                border: none;
+                color: white;
+                border-radius: 10px;
+                padding: 0.6rem 1.2rem;
+                font-weight: 600;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .btn-view-details::after {
+                content: "";
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 0;
+                height: 0;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.3);
+                transform: translate(-50%, -50%);
+                transition:
+                    width 0.6s,
+                    height 0.6s;
+            }
+
+            .btn-view-details:active::after {
+                width: 300px;
+                height: 300px;
+            }
+
+            .btn-view-details:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            }
+
+            /* Pagination */
+            .pagination {
+                gap: 0.5rem;
+            }
+
+            .pagination .page-item .page-link {
+                border: 2px solid #e9ecef;
+                border-radius: 10px;
+                color: var(--primary-gradient-start);
+                font-weight: 600;
+                padding: 0.6rem 1rem;
+                transition: all 0.3s ease;
+            }
+
+            .pagination .page-item.active .page-link {
+                background: linear-gradient(
+                    135deg,
+                    var(--primary-gradient-start) 0%,
+                    var(--primary-gradient-end) 100%
+                );
+                border-color: transparent;
+                color: white;
+                box-shadow: var(--shadow-sm);
+            }
+
+            .pagination .page-item .page-link:hover {
+                background: linear-gradient(
+                    135deg,
+                    var(--primary-gradient-start) 0%,
+                    var(--primary-gradient-end) 100%
+                );
+                border-color: transparent;
+                color: white;
+                transform: translateY(-2px);
+            }
+
+            /* Loading Spinner */
+            .spinner-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(255, 255, 255, 0.9);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.3s ease;
+            }
+
+            .spinner-overlay.show {
+                opacity: 1;
+                pointer-events: all;
+            }
+
+            .spinner-border-gradient {
+                width: 3rem;
+                height: 3rem;
+                border-width: 0.3rem;
+                border-color: var(--primary-gradient-start);
+                border-right-color: transparent;
+            }
+
+            /* Empty State */
+            .empty-state {
+                animation: fadeInUp 0.8s ease-out;
+                padding: 4rem 2rem;
+            }
+
+            .empty-state i {
+                background: linear-gradient(
+                    135deg,
+                    var(--primary-gradient-start) 0%,
+                    var(--primary-gradient-end) 100%
+                );
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+
+            /* Alert Messages */
+            .alert {
+                border-radius: 15px;
+                border: none;
+                animation: fadeInUp 0.5s ease-out;
+            }
+
+            .alert-success {
+                background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+                color: white;
+            }
+
+            .alert-danger {
+                background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+                color: white;
+            }
+
+            /* Card Animation Delays */
+            .product-card:nth-child(1) {
+                animation-delay: 0.1s;
+            }
+            .product-card:nth-child(2) {
+                animation-delay: 0.2s;
+            }
+            .product-card:nth-child(3) {
+                animation-delay: 0.3s;
+            }
+            .product-card:nth-child(4) {
+                animation-delay: 0.4s;
+            }
+            .product-card:nth-child(5) {
+                animation-delay: 0.5s;
+            }
+            .product-card:nth-child(6) {
+                animation-delay: 0.6s;
+            }
+            .product-card:nth-child(7) {
+                animation-delay: 0.7s;
+            }
+            .product-card:nth-child(8) {
+                animation-delay: 0.8s;
+            }
+
+            /* Admin Button */
+            .btn-add-product {
+                background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+                border: none;
+                color: white;
+                border-radius: 12px;
+                padding: 0.6rem 1.2rem;
+                font-weight: 600;
+            }
+
+            .btn-add-product:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(72, 187, 120, 0.3);
+            }
+
+            /* Icon Buttons */
+            .btn-icon {
+                width: 36px;
+                height: 36px;
+                padding: 0;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 8px;
+            }
+
+            .btn-icon:hover {
+                transform: translateY(-2px) scale(1.1);
+            }
+        </style>
+    </head>
+
+    <body>
+        <!-- Navigation -->
+        <div th:replace="~{fragments/header}"></div>
+
+        <!-- Loading Spinner -->
+        <div class="spinner-overlay" id="loadingSpinner">
+            <div class="spinner-border spinner-border-gradient" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
         </div>
-        
-        <!-- Products Grid -->
-        <div class="row">
-            <div class="col-md-4 mb-4" th:each="product : ${products.content}">
-                <div class="card product-card">
-                    <img th:src="${product.imageUrl}" class="card-img-top" alt="${product.name}">
-                    <div class="card-body">
-                        <h5 class="card-title" th:text="${product.name}">Product Name</h5>
-                        <p class="card-text" th:text="${product.description}">Product description goes here...</p>
-                        <p class="card-text"><strong th:text="${#numbers.formatDecimal(product.price)}">$0.00</strong></p>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="badge bg-success" th:if="${product.stockQuantity > 0}" th:text="${product.stockQuantity + ' in stock'">In Stock</span>
-                            <span class="badge bg-danger" th:unless="${product.stockQuantity > 0}" th:text="'Out of Stock'">Out of Stock</span>
+
+        <!-- Flash messages -->
+        <div class="container mt-3">
+            <div
+                th:if="${successMessage}"
+                class="alert alert-success alert-dismissible fade show"
+                role="alert"
+            >
+                <i class="fas fa-check-circle me-2"></i>
+                <span th:text="${successMessage}"></span>
+                <button
+                    type="button"
+                    class="btn-close btn-close-white"
+                    data-bs-dismiss="alert"
+                ></button>
+            </div>
+            <div
+                th:if="${errorMessage}"
+                class="alert alert-danger alert-dismissible fade show"
+                role="alert"
+            >
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <span th:text="${errorMessage}"></span>
+                <button
+                    type="button"
+                    class="btn-close btn-close-white"
+                    data-bs-dismiss="alert"
+                ></button>
+            </div>
+        </div>
+
+        <main class="container py-5">
+            <!-- Search bar -->
+            <div class="search-container">
+                <form
+                    th:action="@{/products}"
+                    method="get"
+                    class="d-flex gap-2 flex-wrap"
+                >
+                    <input
+                        type="text"
+                        name="search"
+                        class="form-control flex-grow-1"
+                        th:value="${search}"
+                        placeholder="🔍 Search for amazing products..."
+                        style="min-width: 250px"
+                    />
+                    <button type="submit" class="btn btn-gradient text-nowrap">
+                        <span><i class="fas fa-search me-2"></i> Search</span>
+                    </button>
+                    <a
+                        th:if="${search != null and !#strings.isEmpty(search)}"
+                        th:href="@{/products}"
+                        class="btn btn-outline-secondary text-nowrap"
+                        style="border-radius: 12px"
+                    >
+                        <i class="fas fa-times me-1"></i> Clear
+                    </a>
+                </form>
+            </div>
+
+            <!-- Results header -->
+            <div
+                class="d-flex justify-content-between align-items-center mb-4 animate-fade-in"
+            >
+                <h5 class="mb-0" style="color: #2d3748; font-weight: 700">
+                    <i
+                        class="fas fa-box-open me-2"
+                        style="color: var(--primary-gradient-start)"
+                    ></i>
+                    <span
+                        th:text="${products.totalElements + ' Product' + (products.totalElements != 1 ? 's' : '') + ' Found'}"
+                    >
+                        0 Products Found
+                    </span>
+                </h5>
+                <span th:if="${isAdmin}">
+                    <a th:href="@{/products/new}" class="btn btn-add-product">
+                        <i class="fas fa-plus me-2"></i> Add Product
+                    </a>
+                </span>
+            </div>
+
+            <!-- Products grid -->
+            <div
+                class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4"
+                th:if="${products != null and products.totalElements > 0}"
+            >
+                <div class="col" th:each="product : ${products.content}">
+                    <div class="card product-card animate-fade-in-up">
+                        <div class="product-media">
+                            <img
+                                th:if="${product.imageUrl != null and !#strings.isEmpty(product.imageUrl)}"
+                                th:src="${product.imageUrl}"
+                                th:alt="${product.name}"
+                            />
+                            <div
+                                class="product-media-placeholder"
+                                th:unless="${product.imageUrl != null and !#strings.isEmpty(product.imageUrl)}"
+                                th:text="${product.name}"
+                            >
+                                No image
+                            </div>
                         </div>
-                        <a th:href="@{/products/} + ${product.id}" class="btn btn-primary">View Details</a>
+
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${product.name}">
+                                Product Name
+                            </h5>
+                            <p
+                                class="card-text text-muted small flex-grow-1 mb-3"
+                                th:text="${#strings.abbreviate(product.description, 90)}"
+                            >
+                                Description
+                            </p>
+                            <p
+                                class="price mb-3"
+                                th:text="${'$' + #numbers.formatDecimal(product.price, 1, 2)}"
+                            >
+                                $0.00
+                            </p>
+                            <div class="mb-3">
+                                <span
+                                    class="badge bg-success"
+                                    th:if="${product.stockQuantity > 0}"
+                                    th:text="${product.stockQuantity + ' in stock'}"
+                                    >In Stock</span
+                                >
+                                <span
+                                    class="badge bg-danger"
+                                    th:unless="${product.stockQuantity > 0}"
+                                    >Out of Stock</span
+                                >
+                            </div>
+                            <div class="d-flex gap-2 mt-auto">
+                                <a
+                                    th:href="@{/products/{id}(id=${product.id})}"
+                                    class="btn btn-view-details flex-grow-1"
+                                >
+                                    View Details
+                                </a>
+                                <div th:if="${isAdmin}" class="d-flex gap-1">
+                                    <a
+                                        th:href="@{/products/{id}/edit(id=${product.id})}"
+                                        class="btn btn-outline-secondary btn-icon"
+                                        title="Edit"
+                                    >
+                                        <i class="fas fa-pen"></i>
+                                    </a>
+                                    <form
+                                        th:action="@{/products/{id}/delete(id=${product.id})}"
+                                        method="post"
+                                        class="d-inline"
+                                        onsubmit="
+                                            return confirm(
+                                                'Delete this product?',
+                                            );
+                                        "
+                                    >
+                                        <button
+                                            type="submit"
+                                            class="btn btn-outline-danger btn-icon"
+                                            title="Delete"
+                                        >
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <!-- Pagination -->
-        <div class="pagination-container" th:if="${products.totalPages > 1}">
-            <nav aria-label="Page navigation">
-                <ul class="pagination">
-                    <li th:if="${products.hasPrevious()}">
-                        <a th:href="@{/products(page=${products.number - 1}, size=${products.size})}" class="page-link">
-                            <i class="fas fa-chevron-left"></i> Previous
+
+            <!-- Empty state -->
+            <div
+                class="text-center empty-state"
+                th:if="${products == null or products.totalElements == 0}"
+            >
+                <i class="fas fa-box-open fa-5x mb-4"></i>
+                <h4 style="color: #2d3748; font-weight: 700">
+                    No products found
+                </h4>
+                <p
+                    class="text-muted mb-4"
+                    th:if="${search != null and !#strings.isEmpty(search)}"
+                >
+                    We couldn't find any products matching "<span
+                        th:text="${search}"
+                    ></span
+                    >". Try a different search term.
+                </p>
+                <a
+                    th:if="${search != null and !#strings.isEmpty(search)}"
+                    th:href="@{/products}"
+                    class="btn btn-gradient"
+                >
+                    <span
+                        ><i class="fas fa-th-large me-2"></i>View all
+                        products</span
+                    >
+                </a>
+            </div>
+
+            <!-- Pagination -->
+            <nav
+                th:if="${products != null and products.totalPages > 1}"
+                class="mt-5 animate-fade-in"
+            >
+                <ul class="pagination justify-content-center flex-wrap">
+                    <li
+                        class="page-item"
+                        th:classappend="${!products.hasPrevious()} ? 'disabled'"
+                    >
+                        <a
+                            class="page-link"
+                            th:href="@{/products(page=${products.number - 1}, size=${products.size}, search=${search})}"
+                        >
+                            <i class="fas fa-chevron-left me-1"></i> Prev
                         </a>
                     </li>
-                    
-                    <li th:each="i : ${#numbers.sequence(0, products.totalPages - 1)}">
-                        <a th:href="@{/products(page=${i + 1}, size=${products.size})}" 
-                           th:class="${i == products.number ? 'page-link active' : 'page-link'}">
-                            <span th:text="${i + 1}"></span>
-                        </a>
+
+                    <li
+                        class="page-item"
+                        th:each="i : ${#numbers.sequence(0, products.totalPages - 1)}"
+                        th:classappend="${i == products.number} ? 'active'"
+                    >
+                        <a
+                            class="page-link"
+                            th:href="@{/products(page=${i}, size=${products.size}, search=${search})}"
+                            th:text="${i + 1}"
+                            >1</a
+                        >
                     </li>
-                    
-                    <li th:if="${products.hasNext()}">
-                        <a th:href="@{/products(page=${products.number + 1}, size=${products.size})}" class="page-link">
-                            Next <i class="fas fa-chevron-right"></i>
+
+                    <li
+                        class="page-item"
+                        th:classappend="${!products.hasNext()} ? 'disabled'"
+                    >
+                        <a
+                            class="page-link"
+                            th:href="@{/products(page=${products.number + 1}, size=${products.size}, search=${search})}"
+                        >
+                            Next <i class="fas fa-chevron-right ms-1"></i>
                         </a>
                     </li>
                 </ul>
             </nav>
-        </div>
-    </div>
-    
-    <!-- Content for layout -->
-    <div th:fragment="content">
-        <!-- Page content will be inserted here -->
-    </div>
-</body>
+        </main>
+
+        <!-- Footer -->
+        <div th:replace="~{fragments/footer}"></div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            // Auto-hide alerts after 5 seconds
+            setTimeout(() => {
+                const alerts = document.querySelectorAll(".alert");
+                alerts.forEach((alert) => {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                });
+            }, 5000);
+
+            // Form submission loading
+            document.querySelectorAll("form").forEach((form) => {
+                form.addEventListener("submit", (e) => {
+                    if (form.onsubmit && !form.onsubmit()) {
+                        return;
+                    }
+                    document
+                        .getElementById("loadingSpinner")
+                        .classList.add("show");
+                });
+            });
+        </script>
+    </body>
 </html>
